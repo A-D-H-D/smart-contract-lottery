@@ -107,9 +107,9 @@ contract Raffle is VRFConsumerBaseV2Plus {
         uint256 indexOfWinner = randomWords[0] % s_players.length;
         address payable recentWinner = s_players[indexOfWinner];
         s_recentWinner = recentWinner;
-        (bool success,)= recentWinner.call{value: address(this).balance}("");
-        if(!success){
-            revert Raffle__TransferFailed   ();
+        (bool success,) = recentWinner.call{value: address(this).balance}("");
+        if (!success) {
+            revert Raffle__TransferFailed();
         }
     }
 
