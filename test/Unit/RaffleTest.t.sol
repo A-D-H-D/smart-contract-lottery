@@ -18,7 +18,7 @@ contract RaffleTest is Test {
     uint32 callbackGasLimit;
     uint256 subscriptionId;
 
-    // users
+    // users -> make addresses based on as string
     address public PLAYER = makeAddr("player");
     uint256 constant STARTING_PLAYER_BALANCE = 10 ether;
 
@@ -33,9 +33,56 @@ contract RaffleTest is Test {
         gasLane = config.gasLane;
         callbackGasLimit = config.callbackGasLimit;
         subscriptionId = config.subscriptionId;
+
+        vm.deal(PLAYER, STARTING_PLAYER_BALANCE);
     }
 
-    function testRaffleInitializesInOpen() public view {
+    function testRaffleInitializesInOpenState() public view {
         assert(raffle.getRaffleState() == Raffle.RaffleState.OPEN);
+    }
+
+    function testRaffleRevertsWhenYouDontPayEnoughEth() public {
+        vm.prank(PLAYER);
+
+        vm.expectRevert(Raffle.Raffle__SendMoreEnoughEthToEnterRaffle.selector);
+        raffle.enterRaffle();
+    }
+
+    function testRaffleRecordsPlayersWhenTheyEnter() public{
+        //Assert
+        vm.prank(PLAYER);
+
+        //Act
+        raffle.enterRaffle{value: entranceFee}();
+
+        address playerRecorded = raffle.getPlayer(0);
+        assert(playerRecorded == PLAYER);
+    }
+
+    function testMultipleUSersCanEnter() public{
+        // adding two new players here
+        address player2 = makeAddr("player2");
+        address player3 = makeAddr("player3");
+
+        vm.deal(player2, STARTING_PLAYER_BALANCE);
+        vm.deal(player3, STARTING_PLAYER_BALANCE);
+
+        //playerone enters
+        vm.prank(PLAYER);
+        raffle.enterRaffle{value: entranceFee}();
+
+        // playeer two enters
+        vm.prank(player2);
+        raffle.enterRaffle{value: entranceFee}();
+
+        //player three enters
+        vm.prank(player3);
+        raffle.enterRaffle{value: entranceFee}();
+
+        //assert the players
+        assert(raffle.getPlayer(0) == PLAYER);
+        assert(raffle.getPlayer(1) == player2);
+        assert(raffle.getPlayer(2) == player3);
+
     }
 }
