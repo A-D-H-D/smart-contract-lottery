@@ -48,7 +48,7 @@ contract RaffleTest is Test {
         raffle.enterRaffle();
     }
 
-    function testRaffleRecordsPlayersWhenTheyEnter() public{
+    function testRaffleRecordsPlayersWhenTheyEnter() public {
         //Assert
         vm.prank(PLAYER);
 
@@ -59,7 +59,7 @@ contract RaffleTest is Test {
         assert(playerRecorded == PLAYER);
     }
 
-    function testMultipleUSersCanEnter() public{
+    function testMultipleUSersCanEnter() public {
         // adding two new players here
         address player2 = makeAddr("player2");
         address player3 = makeAddr("player3");
@@ -83,6 +83,5 @@ contract RaffleTest is Test {
         assert(raffle.getPlayer(0) == PLAYER);
         assert(raffle.getPlayer(1) == player2);
         assert(raffle.getPlayer(2) == player3);
-
     }
 }
